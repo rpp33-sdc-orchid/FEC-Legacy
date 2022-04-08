@@ -7,14 +7,17 @@ const cors = require('cors');
 const port = 3000;
 const { API_URL, API_KEY } = require('./config.js');
 
+
 app.use(cors());
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(bodyParser.json());
 app.use(express.static(path.join(__dirname, '../client/dist')));
 
+
+
 app.all('/*', (req, res) => {
 
-  const apiPaths = ['/products', '/reviews', '/qa', '/cart', '/interactions'];
+  const apiPaths = ['/reviews', '/qa', '/cart', '/interactions'];
   let isApiPath = apiPaths.some(apiPath => req.url.startsWith(apiPath));
 
   if (isApiPath) {
@@ -37,20 +40,41 @@ app.all('/*', (req, res) => {
       });
 
   } else {
-    axios({
-      headers: { 'Authorization': API_KEY },
-      baseURL: API_URL,
-      url: `/products${req.url}`,
-      method: req.method,
-    })
-      .then(() => {
-        let productID = req.url.substring(1);
-        res.redirect(`/?${productID}`);
+    if (req.url.startsWith('/products')) {
+      // console.log('request.url?', req.url);
+      axios({
+        // headers: { 'Authorization': API_KEY },
+        baseURL: 'http://localhost:8000',
+        url: req.url,
+        method: req.method,
+        data: req.body
       })
-      .catch((err) => {
-        console.log(err);
-        res.redirect('/');
-      });
+        .then((apiResponse) => {
+          res.send({
+            data: apiResponse.data,
+            status: apiResponse.status
+          });
+        })
+        .catch((err) => {
+          console.log(err);
+          res.status(err.response.status).send('API request error.');
+        });
+    } else {
+      axios({
+        headers: { 'Authorization': API_KEY },
+        baseURL: API_URL,
+        url: `/products${req.url}`,
+        method: req.method,
+      })
+        .then(() => {
+          let productID = req.url.substring(1);
+          res.redirect(`/?${productID}`);
+        })
+        .catch((err) => {
+          console.log(err);
+          res.redirect('/');
+        });
+    }
   }
 });
 
