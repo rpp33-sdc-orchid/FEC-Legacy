@@ -73,7 +73,7 @@ class RelatedItemsAndMyOutfits extends React.Component {
         let results = res.data.data.results[0];
         product.sale = results.sale_price;
         product.price = results.original_price;
-        product.image = results.photos[0].thumbnail_url;
+        product.image = results.photos[0].thumbnail_url || '';
         return product;
       })
       .catch((err) => {
