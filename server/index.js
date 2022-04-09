@@ -8,16 +8,34 @@ const port = 3000;
 const { API_URL, API_KEY } = require('./config.js');
 
 app.use(cors());
-app.use(bodyParser.urlencoded({extended: true}));
+app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 app.use(express.static(path.join(__dirname, '../client/dist')));
 
 app.all('/*', (req, res) => {
 
-  const apiPaths = ['/products', '/reviews', '/qa', '/cart', '/interactions'];
+  const apiPaths = ['/products', '/qa', '/cart', '/interactions'];
   let isApiPath = apiPaths.some(apiPath => req.url.startsWith(apiPath));
 
-  if (isApiPath) {
+  if (req.url.startsWith('/reviews')) {
+    axios({
+      // headers: { 'Authorization': API_KEY },
+      baseURL: 'http://localhost:8000',
+      url: req.url,
+      method: req.method,
+      data: req.body
+    })
+      .then((apiResponse) => {
+        res.send({
+          data: apiResponse.data,
+          status: apiResponse.status
+        });
+      })
+      .catch((err) => {
+        console.log(err);
+        res.status(err.response.status).send('API request error.');
+      });
+  } else if (isApiPath) {
     axios({
       headers: { 'Authorization': API_KEY },
       baseURL: API_URL,
@@ -35,7 +53,6 @@ app.all('/*', (req, res) => {
         console.log(err);
         res.status(err.response.status).send('API request error.');
       });
-
   } else {
     axios({
       headers: { 'Authorization': API_KEY },
@@ -54,6 +71,6 @@ app.all('/*', (req, res) => {
   }
 });
 
-app.listen(port, ()=> {
+app.listen(port, () => {
   console.log(`Listening at localhost:${port}`);
 });
