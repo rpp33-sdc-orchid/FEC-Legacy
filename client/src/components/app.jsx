@@ -25,7 +25,7 @@ class App extends React.Component {
       myOutfits: [],
       currentProductInOutfit: false,
       starRating: 0,
-      defaultProductId: 64627
+      defaultProductId: 1
     };
   }
 
@@ -57,7 +57,7 @@ class App extends React.Component {
         });
       })
       .then((res) => {
-        if (this.state.myOutfits.includes(this.state.product.id.toString())) {
+        if (this.state.myOutfits.includes(this.state.product.id)) {
           this.setState({ currentProductInOutfit: true });
         }
       })
@@ -118,7 +118,7 @@ class App extends React.Component {
           starRating={<StarRating value={this.state.starRating}/>}
           toggleOutfit={this.toggleOutfit.bind(this)}/>
 
-        <RelatedItemsOutfitCreationWithLogger
+        {/* <RelatedItemsOutfitCreationWithLogger
           product={this.state.product}
           myOutfits={this.state.myOutfits}
           starRating={<StarRating value={this.state.starRating}/>}
@@ -131,7 +131,7 @@ class App extends React.Component {
           starRating={this.state.starRating}
           updateStarRating={this.updateStarRating.bind(this)}
           product={this.state.product}
-        />
+        /> */}
       </React.Fragment>
     );
   }

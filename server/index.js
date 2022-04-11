@@ -50,6 +50,7 @@ app.all('/*', (req, res) => {
         data: req.body
       })
         .then((apiResponse) => {
+          // console.log('in server', apiResponse.data);
           res.send({
             data: apiResponse.data,
             status: apiResponse.status
@@ -60,9 +61,10 @@ app.all('/*', (req, res) => {
           res.status(err.response.status).send('API request error.');
         });
     } else {
+      // console.log('request.url?', req.url);
       axios({
-        headers: { 'Authorization': API_KEY },
-        baseURL: API_URL,
+        // headers: { 'Authorization': API_KEY },
+        baseURL: 'http://localhost:8000',
         url: `/products${req.url}`,
         method: req.method,
       })
